@@ -1,0 +1,86 @@
+#!/usr/bin/env node
+
+const args = process.argv.slice(2)
+
+if (args.length === 0) {
+  console.error('Please provide a number as a command-line argument.')
+  process.exit(1)
+}
+
+const N = parseFloat(args[0])
+
+if (isNaN(N)) {
+  console.error('Invalid number provided as a command-line argument.')
+  process.exit(1)
+}
+
+let rows = [ [0, 1, 0] ]
+let max_n = 0
+
+for (let i = 0; i < N-1; i++) {
+  const currRow = rows[i]
+  let newRow = []
+
+  newRow.push(0)
+  for (let j = 0; j < currRow.length; j++) {
+    if (j < currRow.length-1) {
+      const n = currRow[j] + currRow[j+1]
+      max_n = Math.max(max_n, n)
+      newRow.push(n)
+    }
+  }
+  newRow.push(0)
+
+  rows.push(newRow)
+}
+
+let max_n_w = max_n.toString().length
+
+let before_space
+if (max_n_w > 1) {
+  before_space = (max_n_w*N)
+} else {
+  before_space = (max_n_w*N) + N-1
+}
+
+rows.forEach((row, i) => {
+  nums = " ".repeat(before_space)
+  before_space -= 1
+  legs = " ".repeat(before_space)
+
+  if (max_n_w > 1) {
+    before_space -= max_n_w-1
+  } else {
+    before_space -= max_n_w
+  }
+
+  row.forEach(cell => {
+    if (cell >= 1) {
+      // number
+      const w = cell.toString().length
+      nums += ".".repeat(max_n_w - w)
+      nums += cell
+
+      if (max_n_w > 1) {
+        // after space
+        nums += " ".repeat(max_n_w)
+        // legs
+        legs += "/"
+        legs += " ".repeat(max_n_w)
+        legs += "\\"
+        legs += " ".repeat(max_n_w - 2)
+      } else {
+        // after space
+        nums += " ".repeat(max_n_w * 3)
+        // legs
+        legs += "/"
+        legs += " ".repeat(max_n_w)
+        legs += "\\"
+        legs += " ".repeat(max_n_w)
+      }
+    }
+  })
+
+  console.log(nums)
+  if (i !=  N-1) console.log(legs) // don't print legs for the last set
+})
